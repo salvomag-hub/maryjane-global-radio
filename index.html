@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a1a">
+    <title>🌍 MaryJane Global Radio</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding-bottom: 120px;
+        }
+        
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .search-box::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .countries-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .country-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .country-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-3px);
+        }
+        
+        .country-flag {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .country-name {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .station-count {
+            font-size: 0.75em;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+        
+        .stations-list {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+        }
+        
+        .stations-list.active {
+            display: block;
+        }
+        
+        .back-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .station-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .station-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .station-item.playing {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.2);
+        }
+        
+        .station-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            overflow: hidden;
+        }
+        
+        .station-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .station-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .station-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .station-genre {
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+        
+        .player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px 20px;
+            display: none;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .player.active {
+            display: block;
+        }
+        
+        .player-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .player-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .player-station {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .player-status {
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+        
+        .player-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .player-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .player-btn.stop {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.6;
+        }
+        
+        .favorites-section {
+            padding: 20px;
+            display: none;
+        }
+        
+        .favorites-section.active {
+            display: block;
+        }
+        
+        .no-favorites {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.6;
+        }
+        
+        .fav-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading-pulse {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌍 MaryJane Global Radio</h1>
+        <input type="text" class="search-box" id="searchBox" placeholder="🔍 Cerca paese o stazione...">
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" data-tab="countries">🌍 Paesi</button>
+        <button class="tab" data-tab="favorites">⭐ Preferiti</button>
+    </div>
+    
+    <div id="countriesView">
+        <div class="countries-grid" id="countriesGrid">
+            <div class="loading loading-pulse">Caricamento paesi...</div>
+        </div>
+    </div>
+    
+    <div class="stations-list" id="stationsView">
+        <button class="back-btn" id="backBtn">← Torna ai paesi</button>
+        <h2 id="countryTitle" style="margin-bottom: 20px;"></h2>
+        <div id="stationsList"></div>
+    </div>
+    
+    <div class="favorites-section" id="favoritesView">
+        <h2 style="text-align: center; margin-bottom: 20px;">⭐ Le tue stazioni preferite</h2>
+        <div id="favoritesList"></div>
+    </div>
+    
+    <div class="player" id="player">
+        <div class="player-content">
+            <div class="player-info">
+                <div class="player-station" id="playerStation">-</div>
+                <div class="player-status" id="playerStatus">Pronto</div>
+            </div>
+            <div class="player-controls">
+                <button class="player-btn stop" id="stopBtn">⏹</button>
+                <button class="player-btn" id="playPauseBtn">▶</button>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="audioPlayer"></audio>
+    
+    <script>
+        const API_BASE = 'https://de1.api.radio-browser.info/json';
+        
+        // Country data with flags
+        const COUNTRIES = [
+            { code: 'IT', name: 'Italia', flag: '🇮🇹' },
+            { code: 'US', name: 'USA', flag: '🇺🇸' },
+            { code: 'GB', name: 'UK', flag: '🇬🇧' },
+            { code: 'FR', name: 'Francia', flag: '🇫🇷' },
+            { code: 'DE', name: 'Germania', flag: '🇩🇪' },
+            { code: 'ES', name: 'Spagna', flag: '🇪🇸' },
+            { code: 'BR', name: 'Brasile', flag: '🇧🇷' },
+            { code: 'JP', name: 'Giappone', flag: '🇯🇵' },
+            { code: 'MX', name: 'Messico', flag: '🇲🇽' },
+            { code: 'AR', name: 'Argentina', flag: '🇦🇷' },
+            { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+            { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+            { code: 'NL', name: 'Olanda', flag: '🇳🇱' },
+            { code: 'BE', name: 'Belgio', flag: '🇧🇪' },
+            { code: 'CH', name: 'Svizzera', flag: '🇨🇭' },
+            { code: 'AT', name: 'Austria', flag: '🇦🇹' },
+            { code: 'PT', name: 'Portogallo', flag: '🇵🇹' },
+            { code: 'PL', name: 'Polonia', flag: '🇵🇱' },
+            { code: 'RU', name: 'Russia', flag: '🇷🇺' },
+            { code: 'IN', name: 'India', flag: '🇮🇳' },
+            { code: 'CN', name: 'Cina', flag: '🇨🇳' },
+            { code: 'KR', name: 'Corea Sud', flag: '🇰🇷' },
+            { code: 'SE', name: 'Svezia', flag: '🇸🇪' },
+            { code: 'NO', name: 'Norvegia', flag: '🇳🇴' },
+            { code: 'DK', name: 'Danimarca', flag: '🇩🇰' },
+            { code: 'FI', name: 'Finlandia', flag: '🇫🇮' },
+            { code: 'GR', name: 'Grecia', flag: '🇬🇷' },
+            { code: 'TR', name: 'Turchia', flag: '🇹🇷' },
+            { code: 'IE', name: 'Irlanda', flag: '🇮🇪' },
+            { code: 'CZ', name: 'Cechia', flag: '🇨🇿' },
+            { code: 'RO', name: 'Romania', flag: '🇷🇴' },
+            { code: 'HU', name: 'Ungheria', flag: '🇭🇺' },
+            { code: 'CL', name: 'Cile', flag: '🇨🇱' },
+            { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
+            { code: 'ZA', name: 'Sudafrica', flag: '🇿🇦' },
+            { code: 'EG', name: 'Egitto', flag: '🇪🇬' },
+            { code: 'MA', name: 'Marocco', flag: '🇲🇦' },
+            { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+            { code: 'IL', name: 'Israele', flag: '🇮🇱' },
+            { code: 'AE', name: 'Emirati', flag: '🇦🇪' },
+            { code: 'TH', name: 'Tailandia', flag: '🇹🇭' },
+            { code: 'PH', name: 'Filippine', flag: '🇵🇭' },
+            { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
+            { code: 'MY', name: 'Malaysia', flag: '🇲🇾' },
+            { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
+            { code: 'NZ', name: 'N. Zelanda', flag: '🇳🇿' },
+            { code: 'UA', name: 'Ucraina', flag: '🇺🇦' },
+            { code: 'HR', name: 'Croazia', flag: '🇭🇷' },
+        ];
+        
+        let currentStation = null;
+        let isPlaying = false;
+        let favorites = JSON.parse(localStorage.getItem('radioFavorites') || '[]');
+        
+        const audio = document.getElementById('audioPlayer');
+        const player = document.getElementById('player');
+        const playerStation = document.getElementById('playerStation');
+        const playerStatus = document.getElementById('playerStatus');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        
+        // Render countries
+        function renderCountries(filter = '') {
+            const grid = document.getElementById('countriesGrid');
+            const filtered = COUNTRIES.filter(c => 
+                c.name.toLowerCase().includes(filter.toLowerCase()) ||
+                c.code.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            grid.innerHTML = filtered.map(country => `
+                <div class="country-card" onclick="loadCountry('${country.code}', '${country.name}', '${country.flag}')">
+                    <div class="country-flag">${country.flag}</div>
+                    <div class="country-name">${country.name}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Load stations for country
+        async function loadCountry(code, name, flag) {
+            document.getElementById('countriesView').style.display = 'none';
+            document.getElementById('stationsView').classList.add('active');
+            document.getElementById('countryTitle').textContent = `${flag} ${name}`;
+            document.getElementById('stationsList').innerHTML = '<div class="loading loading-pulse">Caricamento stazioni...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=50&order=clickcount&reverse=true`);
+                const stations = await response.json();
+                renderStations(stations);
+            } catch (error) {
+                document.getElementById('stationsList').innerHTML = '<div class="loading">Errore nel caricamento</div>';
+            }
+        }
+        
+        // Render stations
+        function renderStations(stations) {
+            const list = document.getElementById('stationsList');
+            if (stations.length === 0) {
+                list.innerHTML = '<div class="loading">Nessuna stazione trovata</div>';
+                return;
+            }
+            
+            list.innerHTML = stations.map(station => {
+                const isFav = favorites.some(f => f.stationuuid === station.stationuuid);
+                const isCurrentPlaying = currentStation?.stationuuid === station.stationuuid && isPlaying;
+                return `
+                    <div class="station-item ${isCurrentPlaying ? 'playing' : ''}" data-uuid="${station.stationuuid}">
+                        <div class="station-logo" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                            ${station.favicon ? `<img src="${station.favicon}" onerror="this.parentElement.innerHTML='📻'">` : '📻'}
+                        </div>
+                        <div class="station-info" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                            <div class="station-name">${station.name}</div>
+                            <div class="station-genre">${station.tags?.split(',')[0] || 'Radio'}</div>
+                        </div>
+                        <button class="fav-btn" onclick="toggleFavorite(${JSON.stringify(station).replace(/"/g, '&quot;')})">${isFav ? '⭐' : '☆'}</button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Play station
+        function playStation(station) {
+            currentStation = station;
+            playerStation.textContent = station.name;
+            playerStatus.textContent = 'Connessione...';
+            player.classList.add('active');
+            
+            audio.src = station.url_resolved || station.url;
+            audio.play().then(() => {
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸';
+                playerStatus.textContent = '▶ In riproduzione';
+            }).catch(err => {
+                playerStatus.textContent = '❌ Errore stream';
+            });
+            
+            // Update UI
+            document.querySelectorAll('.station-item').forEach(el => {
+                el.classList.toggle('playing', el.dataset.uuid === station.stationuuid);
+            });
+        }
+        
+        // Toggle play/pause
+        playPauseBtn.onclick = () => {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
+                playerStatus.textContent = '⏸ In pausa';
+            } else if (currentStation) {
+                audio.play();
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸';
+                playerStatus.textContent = '▶ In riproduzione';
+            }
+        };
+        
+        // Stop
+        stopBtn.onclick = () => {
+            audio.pause();
+            audio.src = '';
+            isPlaying = false;
+            currentStation = null;
+            player.classList.remove('active');
+            document.querySelectorAll('.station-item').forEach(el => el.classList.remove('playing'));
+        };
+        
+        // Back button
+        document.getElementById('backBtn').onclick = () => {
+            document.getElementById('stationsView').classList.remove('active');
+            document.getElementById('countriesView').style.display = 'block';
+        };
+        
+        // Favorites
+        function toggleFavorite(station) {
+            const index = favorites.findIndex(f => f.stationuuid === station.stationuuid);
+            if (index >= 0) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(station);
+            }
+            localStorage.setItem('radioFavorites', JSON.stringify(favorites));
+            
+            // Update button
+            event.target.textContent = index >= 0 ? '☆' : '⭐';
+        }
+        
+        function renderFavorites() {
+            const list = document.getElementById('favoritesList');
+            if (favorites.length === 0) {
+                list.innerHTML = '<div class="no-favorites">Nessun preferito ancora.<br>Tocca ☆ per aggiungere stazioni!</div>';
+                return;
+            }
+            renderStationsToElement(favorites, list);
+        }
+        
+        function renderStationsToElement(stations, element) {
+            element.innerHTML = stations.map(station => {
+                const isCurrentPlaying = currentStation?.stationuuid === station.stationuuid && isPlaying;
+                return `
+                    <div class="station-item ${isCurrentPlaying ? 'playing' : ''}" data-uuid="${station.stationuuid}">
+                        <div class="station-logo" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                            ${station.favicon ? `<img src="${station.favicon}" onerror="this.parentElement.innerHTML='📻'">` : '📻'}
+                        </div>
+                        <div class="station-info" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                            <div class="station-name">${station.name}</div>
+                            <div class="station-genre">${station.tags?.split(',')[0] || 'Radio'}</div>
+                        </div>
+                        <button class="fav-btn" onclick="toggleFavorite(${JSON.stringify(station).replace(/"/g, '&quot;')})">⭐</button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Tabs
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.onclick = () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const tabName = tab.dataset.tab;
+                document.getElementById('countriesView').style.display = tabName === 'countries' ? 'block' : 'none';
+                document.getElementById('stationsView').classList.remove('active');
+                document.getElementById('favoritesView').classList.toggle('active', tabName === 'favorites');
+                
+                if (tabName === 'favorites') {
+                    renderFavorites();
+                }
+            };
+        });
+        
+        // Search
+        document.getElementById('searchBox').oninput = (e) => {
+            const query = e.target.value;
+            if (document.getElementById('stationsView').classList.contains('active')) {
+                // Search in current stations
+            } else {
+                renderCountries(query);
+            }
+        };
+        
+        // Audio events
+        audio.onwaiting = () => playerStatus.textContent = '⏳ Buffering...';
+        audio.onplaying = () => playerStatus.textContent = '▶ In riproduzione';
+        audio.onerror = () => playerStatus.textContent = '❌ Errore stream';
+        
+        // Init
+        renderCountries();
+    </script>
+</body>
+</html>
