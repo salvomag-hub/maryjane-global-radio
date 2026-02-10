@@ -435,8 +435,21 @@
             document.getElementById('stationsList').innerHTML = '<div class="loading loading-pulse">Caricamento stazioni...</div>';
             
             try {
-                const response = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=50&order=clickcount&reverse=true`);
-                const stations = await response.json();
+                // Get more stations and filter for working https streams
+                const response = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=100&order=clickcount&reverse=true&lastcheckok=1`);
+                let stations = await response.json();
+                
+                // Prefer HTTPS streams (work better in browsers)
+                stations = stations.filter(s => 
+                    (s.url_resolved?.startsWith('https') || s.url?.startsWith('https'))
+                ).slice(0, 50);
+                
+                // Fallback to all if no https found
+                if (stations.length === 0) {
+                    const resp2 = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=50&order=clickcount&reverse=true&lastcheckok=1`);
+                    stations = await resp2.json();
+                }
+                
                 renderStations(stations);
             } catch (error) {
                 document.getElementById('stationsList').innerHTML = '<div class="loading">Errore nel caricamento</div>';
@@ -470,24 +483,40 @@
         }
         
         // Play station
-        function playStation(station) {
+        async function playStation(station) {
             currentStation = station;
             playerStation.textContent = station.name;
-            playerStatus.textContent = 'Connessione...';
+            playerStatus.textContent = '📡 Connessione...';
             player.classList.add('active');
             
-            audio.src = station.url_resolved || station.url;
-            audio.play().then(() => {
-                isPlaying = true;
-                playPauseBtn.textContent = '⏸';
-                playerStatus.textContent = '▶ In riproduzione';
-            }).catch(err => {
-                playerStatus.textContent = '❌ Errore stream';
-            });
+            // Try different URLs
+            const urls = [
+                station.url_resolved,
+                station.url
+            ].filter(u => u);
+            
+            let success = false;
+            for (const url of urls) {
+                try {
+                    audio.src = url;
+                    await audio.play();
+                    success = true;
+                    isPlaying = true;
+                    playPauseBtn.textContent = '⏸';
+                    playerStatus.textContent = '▶ In riproduzione';
+                    break;
+                } catch (err) {
+                    console.log('Failed URL:', url, err);
+                }
+            }
+            
+            if (!success) {
+                playerStatus.textContent = '❌ Stream non disponibile - prova un\'altra stazione';
+            }
             
             // Update UI
             document.querySelectorAll('.station-item').forEach(el => {
-                el.classList.toggle('playing', el.dataset.uuid === station.stationuuid);
+                el.classList.toggle('playing', el.dataset.uuid === station.stationuuid && success);
             });
         }
         
