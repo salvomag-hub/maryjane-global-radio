@@ -450,6 +450,7 @@
                     stations = await resp2.json();
                 }
                 
+                allStations = stations; // Store for filtering
                 renderStations(stations);
             } catch (error) {
                 document.getElementById('stationsList').innerHTML = '<div class="loading">Errore nel caricamento</div>';
@@ -610,14 +611,55 @@
         });
         
         // Search
+        let allStations = []; // Store loaded stations for filtering
+        let searchTimeout = null;
+        
         document.getElementById('searchBox').oninput = (e) => {
-            const query = e.target.value;
+            const query = e.target.value.toLowerCase().trim();
+            
+            clearTimeout(searchTimeout);
+            
             if (document.getElementById('stationsView').classList.contains('active')) {
-                // Search in current stations
+                // Filter current stations
+                const filtered = allStations.filter(s => 
+                    s.name.toLowerCase().includes(query) ||
+                    (s.tags && s.tags.toLowerCase().includes(query))
+                );
+                renderStations(filtered);
+            } else if (document.getElementById('favoritesView').classList.contains('active')) {
+                // Filter favorites
+                const filtered = favorites.filter(s => 
+                    s.name.toLowerCase().includes(query)
+                );
+                renderStationsToElement(filtered, document.getElementById('favoritesList'));
             } else {
-                renderCountries(query);
+                // Filter countries or search stations globally
+                if (query.length >= 3) {
+                    searchTimeout = setTimeout(() => searchStationsGlobal(query), 500);
+                } else {
+                    renderCountries(query);
+                }
             }
         };
+        
+        async function searchStationsGlobal(query) {
+            document.getElementById('countriesGrid').innerHTML = '<div class="loading loading-pulse">Cercando stazioni...</div>';
+            try {
+                const response = await fetch(`${API_BASE}/stations/byname/${encodeURIComponent(query)}?limit=30&order=clickcount&reverse=true&lastcheckok=1`);
+                const stations = await response.json();
+                if (stations.length > 0) {
+                    document.getElementById('countriesView').style.display = 'none';
+                    document.getElementById('stationsView').classList.add('active');
+                    document.getElementById('countryTitle').textContent = `🔍 Risultati per "${query}"`;
+                    allStations = stations;
+                    renderStations(stations);
+                } else {
+                    renderCountries(query);
+                }
+            } catch (error) {
+                renderCountries(query);
+            }
+        }
         
         // Audio events
         audio.onwaiting = () => playerStatus.textContent = '⏳ Buffering...';
