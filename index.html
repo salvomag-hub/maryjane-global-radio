@@ -663,8 +663,62 @@
         
         // Audio events
         audio.onwaiting = () => playerStatus.textContent = '⏳ Buffering...';
-        audio.onplaying = () => playerStatus.textContent = '▶ In riproduzione';
+        audio.onplaying = () => {
+            playerStatus.textContent = '▶ In riproduzione';
+            updateMediaSession();
+        };
         audio.onerror = () => playerStatus.textContent = '❌ Errore stream';
+        
+        // Media Session API for background playback & lock screen controls
+        function updateMediaSession() {
+            if ('mediaSession' in navigator && currentStation) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: currentStation.name,
+                    artist: currentStation.tags?.split(',')[0] || 'Radio',
+                    album: 'MaryJane Global Radio',
+                    artwork: currentStation.favicon ? [
+                        { src: currentStation.favicon, sizes: '96x96', type: 'image/png' },
+                        { src: currentStation.favicon, sizes: '128x128', type: 'image/png' },
+                        { src: currentStation.favicon, sizes: '256x256', type: 'image/png' }
+                    ] : []
+                });
+                
+                navigator.mediaSession.setActionHandler('play', () => {
+                    audio.play();
+                    isPlaying = true;
+                    playPauseBtn.textContent = '⏸';
+                });
+                
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    audio.pause();
+                    isPlaying = false;
+                    playPauseBtn.textContent = '▶';
+                });
+                
+                navigator.mediaSession.setActionHandler('stop', () => {
+                    stopBtn.click();
+                });
+            }
+        }
+        
+        // Prevent audio suspension on mobile
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && currentStation && isPlaying) {
+                // Resume if needed when coming back
+                if (audio.paused) {
+                    audio.play().catch(() => {});
+                }
+            }
+        });
+        
+        // Keep audio session alive
+        audio.setAttribute('playsinline', '');
+        audio.setAttribute('webkit-playsinline', '');
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
         
         // Init
         renderCountries();
