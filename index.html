@@ -466,18 +466,19 @@
             }
             
             list.innerHTML = stations.map(station => {
+                stationCache[station.stationuuid] = station;
                 const isFav = favorites.some(f => f.stationuuid === station.stationuuid);
                 const isCurrentPlaying = currentStation?.stationuuid === station.stationuuid && isPlaying;
                 return `
                     <div class="station-item ${isCurrentPlaying ? 'playing' : ''}" data-uuid="${station.stationuuid}">
-                        <div class="station-logo" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                        <div class="station-logo" onclick="playStation(stationCache['${station.stationuuid}'])">
                             ${station.favicon ? `<img src="${station.favicon}" onerror="this.parentElement.innerHTML='📻'">` : '📻'}
                         </div>
-                        <div class="station-info" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                        <div class="station-info" onclick="playStation(stationCache['${station.stationuuid}'])">
                             <div class="station-name">${station.name}</div>
                             <div class="station-genre">${station.tags?.split(',')[0] || 'Radio'}</div>
                         </div>
-                        <button class="fav-btn" onclick="toggleFavorite(${JSON.stringify(station).replace(/"/g, '&quot;')})">${isFav ? '⭐' : '☆'}</button>
+                        <button class="fav-btn" data-uuid="${station.stationuuid}" onclick="toggleFavorite('${station.stationuuid}', event)">${isFav ? '⭐' : '☆'}</button>
                     </div>
                 `;
             }).join('');
@@ -552,18 +553,29 @@
             document.getElementById('countriesView').style.display = 'block';
         };
         
-        // Favorites
-        function toggleFavorite(station) {
-            const index = favorites.findIndex(f => f.stationuuid === station.stationuuid);
+        // Favorites - store stations by uuid for quick lookup
+        let stationCache = {};
+        // Pre-populate cache from saved favorites
+        favorites.forEach(s => { if (s.stationuuid) stationCache[s.stationuuid] = s; });
+        
+        function toggleFavorite(uuid, evt) {
+            if (evt) evt.stopPropagation();
+            const index = favorites.findIndex(f => f.stationuuid === uuid);
             if (index >= 0) {
                 favorites.splice(index, 1);
-            } else {
-                favorites.push(station);
+            } else if (stationCache[uuid]) {
+                favorites.push(stationCache[uuid]);
             }
             localStorage.setItem('radioFavorites', JSON.stringify(favorites));
             
-            // Update button
-            event.target.textContent = index >= 0 ? '☆' : '⭐';
+            // Re-render the current view to update all buttons
+            if (document.getElementById('favoritesView').classList.contains('active')) {
+                renderFavorites();
+            }
+            // Update button in stations view
+            document.querySelectorAll(`.fav-btn[data-uuid="${uuid}"]`).forEach(btn => {
+                btn.textContent = index >= 0 ? '☆' : '⭐';
+            });
         }
         
         function renderFavorites() {
@@ -577,17 +589,19 @@
         
         function renderStationsToElement(stations, element) {
             element.innerHTML = stations.map(station => {
+                stationCache[station.stationuuid] = station;
+                const isFav = favorites.some(f => f.stationuuid === station.stationuuid);
                 const isCurrentPlaying = currentStation?.stationuuid === station.stationuuid && isPlaying;
                 return `
                     <div class="station-item ${isCurrentPlaying ? 'playing' : ''}" data-uuid="${station.stationuuid}">
-                        <div class="station-logo" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                        <div class="station-logo" onclick="playStation(stationCache['${station.stationuuid}'])">
                             ${station.favicon ? `<img src="${station.favicon}" onerror="this.parentElement.innerHTML='📻'">` : '📻'}
                         </div>
-                        <div class="station-info" onclick="playStation(${JSON.stringify(station).replace(/"/g, '&quot;')})">
+                        <div class="station-info" onclick="playStation(stationCache['${station.stationuuid}'])">
                             <div class="station-name">${station.name}</div>
                             <div class="station-genre">${station.tags?.split(',')[0] || 'Radio'}</div>
                         </div>
-                        <button class="fav-btn" onclick="toggleFavorite(${JSON.stringify(station).replace(/"/g, '&quot;')})">⭐</button>
+                        <button class="fav-btn" data-uuid="${station.stationuuid}" onclick="toggleFavorite('${station.stationuuid}', event)">${isFav ? '⭐' : '☆'}</button>
                     </div>
                 `;
             }).join('');
