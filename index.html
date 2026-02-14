@@ -5,350 +5,559 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a0a1a">
+    <meta name="theme-color" content="#0f0c29">
     <title>🌍 MaryJane Global Radio</title>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --teal: #06d6a0;
+            --violet: #bb86fc;
+            --pink: #ff6b9d;
+            --glass: rgba(255,255,255,0.08);
+            --glass-border: rgba(255,255,255,0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e, #0f2027, #203a43, #2c5364);
+            background-size: 400% 400%;
+            animation: aurora 15s ease infinite;
             color: #fff;
             min-height: 100vh;
-            padding-bottom: 120px;
+            padding-bottom: 130px;
         }
-        
+
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 100%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ===== HEADER ===== */
         .header {
-            background: rgba(0,0,0,0.3);
-            padding: 20px;
-            text-align: center;
+            background: rgba(15,12,41,0.7);
+            padding: 14px 20px;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-        
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
         .header h1 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
+            font-size: 1.3em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--teal), var(--violet));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
         }
-        
+
+        .header-subtitle {
+            font-size: 0.65em;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header-center { flex: 1; display: flex; align-items: center; gap: 10px; }
+
         .search-box {
             width: 100%;
-            max-width: 400px;
-            padding: 12px 20px;
+            max-width: 360px;
+            padding: 10px 18px;
             border-radius: 25px;
-            border: none;
-            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            backdrop-filter: blur(16px);
             color: white;
-            font-size: 16px;
+            font-size: 15px;
             outline: none;
+            transition: var(--transition);
         }
-        
-        .search-box::placeholder {
-            color: rgba(255,255,255,0.5);
+        .search-box:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 20px rgba(6,214,160,0.25);
         }
-        
+        .search-box::placeholder { color: rgba(255,255,255,0.35); }
+
+        .mini-eq {
+            display: none;
+            align-items: flex-end;
+            gap: 2px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        .mini-eq.active { display: flex; }
+        .mini-eq span {
+            width: 3px;
+            background: var(--teal);
+            border-radius: 2px;
+            animation: equalize 0.8s ease-in-out infinite alternate;
+        }
+        .mini-eq span:nth-child(1) { animation-delay: 0s; height: 8px; }
+        .mini-eq span:nth-child(2) { animation-delay: 0.2s; height: 14px; }
+        .mini-eq span:nth-child(3) { animation-delay: 0.4s; height: 10px; }
+
+        /* ===== TABS ===== */
         .tabs {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            flex-wrap: wrap;
+            gap: 8px;
+            padding: 14px 20px;
         }
-        
+
         .tab {
-            padding: 10px 20px;
-            border-radius: 20px;
-            border: none;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            padding: 10px 22px;
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            color: rgba(255,255,255,0.6);
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
+            font-size: 0.9em;
         }
-        
+        .tab:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
         .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--teal), var(--violet));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(6,214,160,0.3);
         }
-        
+
+        /* ===== COUNTRIES GRID ===== */
         .countries-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            padding: 16px 20px;
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         .country-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
+            background: var(--glass);
+            border-radius: 20px;
+            padding: 20px 14px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
         }
-        
         .country-card:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateY(-3px);
+            background: rgba(255,255,255,0.14);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-        
-        .country-flag {
-            font-size: 3em;
-            margin-bottom: 10px;
+        .pinned-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            grid-column: 1 / -1;
+            margin-bottom: 8px;
         }
-        
-        .country-name {
-            font-size: 0.9em;
-            opacity: 0.9;
+        .country-card.featured {
+            padding: 24px 20px;
+            border: none;
+            background: var(--glass);
+            background-clip: padding-box;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .station-count {
-            font-size: 0.75em;
-            opacity: 0.6;
-            margin-top: 5px;
+        .country-card.featured::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--teal), var(--violet));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
         }
-        
+        .country-card.featured:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(6,214,160,0.15);
+        }
+        .country-card.featured .country-flag { font-size: 3.5em; }
+        .country-card.featured .country-name { font-size: 1em; font-weight: 600; }
+
+        .country-flag { font-size: 3em; margin-bottom: 8px; }
+        .country-name { font-size: 0.85em; opacity: 0.85; }
+        .station-count { font-size: 0.7em; opacity: 0.4; margin-top: 4px; }
+
+        /* ===== STATIONS LIST ===== */
         .stations-list {
-            padding: 20px;
+            padding: 16px 20px;
             max-width: 800px;
             margin: 0 auto;
             display: none;
         }
-        
-        .stations-list.active {
-            display: block;
-        }
-        
+        .stations-list.active { display: block; }
+
         .back-btn {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            color: rgba(255,255,255,0.7);
             padding: 10px 20px;
             border-radius: 20px;
             cursor: pointer;
-            margin-bottom: 20px;
-            display: flex;
+            margin-bottom: 16px;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            transition: var(--transition);
         }
-        
+        .back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.25); }
+
         .station-item {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 15px;
+            background: var(--glass);
+            border-radius: 16px;
+            padding: 14px 16px;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
             cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: var(--transition);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
         }
-        
         .station-item:hover {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.14);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
         }
-        
         .station-item.playing {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.2);
+            border-left: 3px solid transparent;
+            border-image: linear-gradient(to bottom, var(--teal), var(--violet)) 1;
+            border-image-slice: 1;
+            box-shadow: 0 0 20px rgba(6,214,160,0.12);
+            background: rgba(6,214,160,0.06);
         }
-        
+
         .station-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
+            width: 50px; height: 50px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.06);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
+            font-size: 1.4em;
             overflow: hidden;
+            flex-shrink: 0;
         }
-        
-        .station-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .station-info {
-            flex: 1;
-            overflow: hidden;
-        }
-        
+        .station-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+
+        .station-info { flex: 1; overflow: hidden; }
         .station-name {
-            font-weight: 600;
-            margin-bottom: 3px;
+            font-weight: 700;
+            font-size: 0.95em;
+            margin-bottom: 2px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
         .station-genre {
-            font-size: 0.8em;
+            font-size: 0.78em;
             opacity: 0.6;
         }
-        
+
+        .fav-btn {
+            background: none;
+            border: none;
+            font-size: 1.4em;
+            cursor: pointer;
+            padding: 6px;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fav-btn:active { transform: scale(1.4); }
+        @keyframes favBounce {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+        .fav-btn.bounce { animation: favBounce 0.4s ease; }
+
+        /* ===== FAVORITES / TRENDING ===== */
+        .favorites-section, .trending-section {
+            padding: 16px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            display: none;
+        }
+        .favorites-section.active, .trending-section.active { display: block; }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 1.1em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .recents-header {
+            font-size: 0.85em;
+            opacity: 0.5;
+            margin: 20px 0 10px;
+            padding-left: 4px;
+        }
+
+        .no-favorites, .loading {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.4;
+        }
+
+        /* ===== PLAYER ===== */
         .player {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 26, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 15px 20px;
+            background: rgba(15,12,41,0.9);
+            backdrop-filter: blur(24px);
+            padding: 12px 20px;
             display: none;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid var(--glass-border);
+            z-index: 200;
         }
-        
-        .player.active {
-            display: block;
-        }
-        
+        .player.active { display: block; }
+
         .player-content {
             max-width: 800px;
             margin: 0 auto;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
         }
-        
-        .player-info {
-            flex: 1;
-            overflow: hidden;
-        }
-        
+
+        .player-info { flex: 1; overflow: hidden; min-width: 0; }
         .player-station {
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.9em;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
-        .player-status {
-            font-size: 0.8em;
-            opacity: 0.6;
+        .player-genre {
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.5);
         }
-        
+        .player-status {
+            font-size: 0.72em;
+            color: rgba(255,255,255,0.4);
+        }
+
         .player-controls {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
         }
-        
+
         .player-btn {
-            width: 50px;
-            height: 50px;
             border-radius: 50%;
             border: none;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-size: 1.2em;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
         }
-        
+        .player-btn.play {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, var(--teal), var(--violet));
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(6,214,160,0.3);
+        }
+        .player-btn.play:hover { box-shadow: 0 6px 30px rgba(6,214,160,0.5); transform: scale(1.05); }
         .player-btn.stop {
-            background: rgba(255,255,255,0.1);
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9em;
         }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            opacity: 0.6;
-        }
-        
-        .favorites-section {
-            padding: 20px;
+        .player-btn.stop:hover { background: rgba(255,255,255,0.15); }
+
+        /* Player EQ */
+        .player-eq {
             display: none;
+            align-items: flex-end;
+            gap: 3px;
+            height: 28px;
+            flex-shrink: 0;
         }
-        
-        .favorites-section.active {
-            display: block;
+        .player-eq.active { display: flex; }
+        .player-eq span {
+            width: 4px;
+            background: var(--teal);
+            border-radius: 2px;
         }
-        
-        .no-favorites {
-            text-align: center;
-            padding: 40px;
-            opacity: 0.6;
+        .player-eq span:nth-child(1) { animation: eq1 0.6s ease-in-out infinite alternate; }
+        .player-eq span:nth-child(2) { animation: eq2 0.5s ease-in-out infinite alternate; }
+        .player-eq span:nth-child(3) { animation: eq3 0.7s ease-in-out infinite alternate; }
+        .player-eq span:nth-child(4) { animation: eq4 0.55s ease-in-out infinite alternate; }
+
+        @keyframes eq1 { 0% { height: 4px; } 100% { height: 22px; } }
+        @keyframes eq2 { 0% { height: 8px; } 100% { height: 18px; } }
+        @keyframes eq3 { 0% { height: 6px; } 100% { height: 26px; } }
+        @keyframes eq4 { 0% { height: 10px; } 100% { height: 14px; } }
+
+        /* Volume */
+        .volume-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
         }
-        
-        .fav-btn {
-            background: none;
-            border: none;
-            font-size: 1.5em;
+        .volume-icon { font-size: 0.9em; opacity: 0.5; }
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.15);
+            outline: none;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--teal);
             cursor: pointer;
-            padding: 5px;
+            box-shadow: 0 0 8px rgba(6,214,160,0.4);
         }
-        
+        .volume-slider::-moz-range-thumb {
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: var(--teal);
+            cursor: pointer;
+            border: none;
+        }
+        .volume-slider::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, var(--teal), rgba(255,255,255,0.15));
+        }
+
+        /* ===== KEYFRAMES ===== */
+        @keyframes equalize {
+            0% { height: 4px; }
+            100% { height: 18px; }
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-        
-        .loading-pulse {
-            animation: pulse 1.5s infinite;
+        .loading-pulse { animation: pulse 1.5s infinite; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 500px) {
+            .header { padding: 10px 14px; gap: 8px; }
+            .header h1 { font-size: 1.1em; }
+            .header-subtitle { font-size: 0.55em; }
+            .countries-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; padding: 12px 14px; }
+            .country-card { padding: 16px 10px; border-radius: 16px; }
+            .country-flag { font-size: 2.4em; }
+            .country-card.featured .country-flag { font-size: 3.5em; }
+            .volume-wrap { display: none; }
+            .player-content { gap: 10px; }
+            .player-btn.play { width: 48px; height: 48px; font-size: 1.1em; }
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🌍 MaryJane Global Radio</h1>
-        <input type="text" class="search-box" id="searchBox" placeholder="🔍 Cerca paese o stazione...">
+        <div class="header-left">
+            <h1>MJ Radio</h1>
+            <span class="header-subtitle">Global Streaming</span>
+        </div>
+        <div class="header-center">
+            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Cerca paese o stazione...">
+            <div class="mini-eq" id="miniEq">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
     </div>
-    
+
     <div class="tabs">
         <button class="tab active" data-tab="countries">🌍 Paesi</button>
         <button class="tab" data-tab="favorites">⭐ Preferiti</button>
+        <button class="tab" data-tab="trending">🔥 Trending</button>
     </div>
-    
+
     <div id="countriesView">
         <div class="countries-grid" id="countriesGrid">
             <div class="loading loading-pulse">Caricamento paesi...</div>
         </div>
     </div>
-    
+
     <div class="stations-list" id="stationsView">
         <button class="back-btn" id="backBtn">← Torna ai paesi</button>
-        <h2 id="countryTitle" style="margin-bottom: 20px;"></h2>
+        <h2 id="countryTitle" style="margin-bottom: 16px; font-size: 1.1em;"></h2>
         <div id="stationsList"></div>
     </div>
-    
+
     <div class="favorites-section" id="favoritesView">
-        <h2 style="text-align: center; margin-bottom: 20px;">⭐ Le tue stazioni preferite</h2>
+        <h2 class="section-title">⭐ Le tue stazioni preferite</h2>
         <div id="favoritesList"></div>
+        <div id="recentsSection"></div>
     </div>
-    
+
+    <div class="trending-section" id="trendingView">
+        <h2 class="section-title">🔥 Top 20 — Più ascoltate al mondo</h2>
+        <div id="trendingList"><div class="loading loading-pulse">Caricamento...</div></div>
+    </div>
+
     <div class="player" id="player">
         <div class="player-content">
             <div class="player-info">
                 <div class="player-station" id="playerStation">-</div>
+                <div class="player-genre" id="playerGenre"></div>
                 <div class="player-status" id="playerStatus">Pronto</div>
+            </div>
+            <div class="player-eq" id="playerEq">
+                <span></span><span></span><span></span><span></span>
             </div>
             <div class="player-controls">
                 <button class="player-btn stop" id="stopBtn">⏹</button>
-                <button class="player-btn" id="playPauseBtn">▶</button>
+                <button class="player-btn play" id="playPauseBtn">▶</button>
+            </div>
+            <div class="volume-wrap">
+                <span class="volume-icon">🔊</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.8">
             </div>
         </div>
     </div>
-    
+
     <audio id="audioPlayer"></audio>
-    
+
     <script>
         const API_BASE = 'https://de1.api.radio-browser.info/json';
-        
-        // Country data with flags
+
         const COUNTRIES = [
             { code: 'IT', name: 'Italia', flag: '🇮🇹' },
             { code: 'US', name: 'USA', flag: '🇺🇸' },
@@ -399,72 +608,103 @@
             { code: 'UA', name: 'Ucraina', flag: '🇺🇦' },
             { code: 'HR', name: 'Croazia', flag: '🇭🇷' },
         ];
-        
+
+        const PINNED = ['IT', 'ES', 'AR', 'GB'];
+
         let currentStation = null;
         let isPlaying = false;
         let favorites = JSON.parse(localStorage.getItem('radioFavorites') || '[]');
-        
+        let recents = JSON.parse(localStorage.getItem('radioRecents') || '[]');
+        let stationCache = {};
+        let allStations = [];
+        let currentTab = 'countries';
+        let trendingLoaded = false;
+        let searchTimeout = null;
+
         const audio = document.getElementById('audioPlayer');
         const player = document.getElementById('player');
         const playerStation = document.getElementById('playerStation');
+        const playerGenre = document.getElementById('playerGenre');
         const playerStatus = document.getElementById('playerStatus');
         const playPauseBtn = document.getElementById('playPauseBtn');
         const stopBtn = document.getElementById('stopBtn');
-        
-        // Render countries — pinned first, then alphabetical
-        const PINNED = ['IT', 'ES'];
-        
+        const playerEq = document.getElementById('playerEq');
+        const miniEq = document.getElementById('miniEq');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        // Init volume from localStorage
+        const savedVol = localStorage.getItem('radioVolume');
+        audio.volume = savedVol !== null ? parseFloat(savedVol) : 0.8;
+        volumeSlider.value = audio.volume;
+
+        // Populate stationCache from saved data
+        favorites.forEach(s => { if (s.stationuuid) stationCache[s.stationuuid] = s; });
+        recents.forEach(s => { if (s.stationuuid) stationCache[s.stationuuid] = s; });
+
+        // Volume control
+        volumeSlider.oninput = () => {
+            audio.volume = parseFloat(volumeSlider.value);
+            localStorage.setItem('radioVolume', volumeSlider.value);
+        };
+
+        // Render countries
         function renderCountries(filter = '') {
             const grid = document.getElementById('countriesGrid');
-            const filtered = COUNTRIES.filter(c => 
+            const filtered = COUNTRIES.filter(c =>
                 c.name.toLowerCase().includes(filter.toLowerCase()) ||
                 c.code.toLowerCase().includes(filter.toLowerCase())
             );
-            
+
             const pinned = filtered.filter(c => PINNED.includes(c.code))
                 .sort((a, b) => PINNED.indexOf(a.code) - PINNED.indexOf(b.code));
             const rest = filtered.filter(c => !PINNED.includes(c.code))
                 .sort((a, b) => a.name.localeCompare(b.name));
             const sorted = [...pinned, ...rest];
+
+            const pinnedHtml = pinned.length > 0 ? `<div class="pinned-grid">${pinned.map(country => `
+                <div class="country-card featured" onclick="loadCountry('${country.code}', '${country.name}', '${country.flag}')">
+                    <div class="country-flag">${country.flag}</div>
+                    <div class="country-name">${country.name}</div>
+                </div>
+            `).join('')}</div>` : '';
             
-            grid.innerHTML = sorted.map(country => `
-                <div class="country-card" onclick="loadCountry('${country.code}', '${country.name}', '${country.flag}')" ${PINNED.includes(country.code) ? 'style="border: 2px solid #4CAF50; background: #f0fff0;"' : ''}>
+            const restHtml = rest.map(country => `
+                <div class="country-card" onclick="loadCountry('${country.code}', '${country.name}', '${country.flag}')">
                     <div class="country-flag">${country.flag}</div>
                     <div class="country-name">${country.name}</div>
                 </div>
             `).join('');
+            
+            grid.innerHTML = pinnedHtml + restHtml;
         }
-        
+
         // Load stations for country
         async function loadCountry(code, name, flag) {
             document.getElementById('countriesView').style.display = 'none';
             document.getElementById('stationsView').classList.add('active');
             document.getElementById('countryTitle').textContent = `${flag} ${name}`;
             document.getElementById('stationsList').innerHTML = '<div class="loading loading-pulse">Caricamento stazioni...</div>';
-            
+
             try {
-                // Get more stations and filter for working https streams
                 const response = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=100&order=clickcount&reverse=true&lastcheckok=1`);
                 let stations = await response.json();
-                
-                // Prefer HTTPS streams (work better in browsers)
-                stations = stations.filter(s => 
+
+                stations = stations.filter(s =>
                     (s.url_resolved?.startsWith('https') || s.url?.startsWith('https'))
                 ).slice(0, 50);
-                
-                // Fallback to all if no https found
+
                 if (stations.length === 0) {
                     const resp2 = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=50&order=clickcount&reverse=true&lastcheckok=1`);
                     stations = await resp2.json();
                 }
-                
-                allStations = stations; // Store for filtering
+
+                allStations = stations;
                 renderStations(stations);
             } catch (error) {
                 document.getElementById('stationsList').innerHTML = '<div class="loading">Errore nel caricamento</div>';
             }
         }
-        
+
         // Render stations
         function renderStations(stations) {
             const list = document.getElementById('stationsList');
@@ -472,129 +712,9 @@
                 list.innerHTML = '<div class="loading">Nessuna stazione trovata</div>';
                 return;
             }
-            
-            list.innerHTML = stations.map(station => {
-                stationCache[station.stationuuid] = station;
-                const isFav = favorites.some(f => f.stationuuid === station.stationuuid);
-                const isCurrentPlaying = currentStation?.stationuuid === station.stationuuid && isPlaying;
-                return `
-                    <div class="station-item ${isCurrentPlaying ? 'playing' : ''}" data-uuid="${station.stationuuid}">
-                        <div class="station-logo" onclick="playStation(stationCache['${station.stationuuid}'])">
-                            ${station.favicon ? `<img src="${station.favicon}" onerror="this.parentElement.innerHTML='📻'">` : '📻'}
-                        </div>
-                        <div class="station-info" onclick="playStation(stationCache['${station.stationuuid}'])">
-                            <div class="station-name">${station.name}</div>
-                            <div class="station-genre">${station.tags?.split(',')[0] || 'Radio'}</div>
-                        </div>
-                        <button class="fav-btn" data-uuid="${station.stationuuid}" onclick="toggleFavorite('${station.stationuuid}', event)">${isFav ? '⭐' : '☆'}</button>
-                    </div>
-                `;
-            }).join('');
+            renderStationsToElement(stations, list);
         }
-        
-        // Play station
-        async function playStation(station) {
-            currentStation = station;
-            playerStation.textContent = station.name;
-            playerStatus.textContent = '📡 Connessione...';
-            player.classList.add('active');
-            
-            // Try different URLs
-            const urls = [
-                station.url_resolved,
-                station.url
-            ].filter(u => u);
-            
-            let success = false;
-            for (const url of urls) {
-                try {
-                    audio.src = url;
-                    await audio.play();
-                    success = true;
-                    isPlaying = true;
-                    playPauseBtn.textContent = '⏸';
-                    playerStatus.textContent = '▶ In riproduzione';
-                    break;
-                } catch (err) {
-                    console.log('Failed URL:', url, err);
-                }
-            }
-            
-            if (!success) {
-                playerStatus.textContent = '❌ Stream non disponibile - prova un\'altra stazione';
-            }
-            
-            // Update UI
-            document.querySelectorAll('.station-item').forEach(el => {
-                el.classList.toggle('playing', el.dataset.uuid === station.stationuuid && success);
-            });
-        }
-        
-        // Toggle play/pause
-        playPauseBtn.onclick = () => {
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                playPauseBtn.textContent = '▶';
-                playerStatus.textContent = '⏸ In pausa';
-            } else if (currentStation) {
-                audio.play();
-                isPlaying = true;
-                playPauseBtn.textContent = '⏸';
-                playerStatus.textContent = '▶ In riproduzione';
-            }
-        };
-        
-        // Stop
-        stopBtn.onclick = () => {
-            audio.pause();
-            audio.src = '';
-            isPlaying = false;
-            currentStation = null;
-            player.classList.remove('active');
-            document.querySelectorAll('.station-item').forEach(el => el.classList.remove('playing'));
-        };
-        
-        // Back button
-        document.getElementById('backBtn').onclick = () => {
-            document.getElementById('stationsView').classList.remove('active');
-            document.getElementById('countriesView').style.display = 'block';
-        };
-        
-        // Favorites - store stations by uuid for quick lookup
-        let stationCache = {};
-        // Pre-populate cache from saved favorites
-        favorites.forEach(s => { if (s.stationuuid) stationCache[s.stationuuid] = s; });
-        
-        function toggleFavorite(uuid, evt) {
-            if (evt) evt.stopPropagation();
-            const index = favorites.findIndex(f => f.stationuuid === uuid);
-            if (index >= 0) {
-                favorites.splice(index, 1);
-            } else if (stationCache[uuid]) {
-                favorites.push(stationCache[uuid]);
-            }
-            localStorage.setItem('radioFavorites', JSON.stringify(favorites));
-            
-            // Re-render the current view to update all buttons
-            if (document.getElementById('favoritesView').classList.contains('active')) {
-                renderFavorites();
-            }
-            // Update button in stations view
-            document.querySelectorAll(`.fav-btn[data-uuid="${uuid}"]`).forEach(btn => {
-                btn.textContent = index >= 0 ? '☆' : '⭐';
-            });
-        }
-        
-        function renderFavorites() {
-            const list = document.getElementById('favoritesList');
-            if (favorites.length === 0) {
-                list.innerHTML = '<div class="no-favorites">Nessun preferito ancora.<br>Tocca ☆ per aggiungere stazioni!</div>';
-                return;
-            }
-            renderStationsToElement(favorites, list);
-        }
-        
+
         function renderStationsToElement(stations, element) {
             element.innerHTML = stations.map(station => {
                 stationCache[station.stationuuid] = station;
@@ -614,48 +734,181 @@
                 `;
             }).join('');
         }
-        
+
+        // Play station
+        async function playStation(station) {
+            currentStation = station;
+            playerStation.textContent = station.name;
+            playerGenre.textContent = station.tags?.split(',')[0] || 'Radio';
+            playerStatus.textContent = '📡 Connessione...';
+            player.classList.add('active');
+
+            const urls = [station.url_resolved, station.url].filter(u => u);
+
+            let success = false;
+            for (const url of urls) {
+                try {
+                    audio.src = url;
+                    await audio.play();
+                    success = true;
+                    isPlaying = true;
+                    playPauseBtn.textContent = '⏸';
+                    playerStatus.textContent = '▶ In riproduzione';
+                    playerEq.classList.add('active');
+                    miniEq.classList.add('active');
+                    addToRecents(station);
+                    break;
+                } catch (err) {
+                    console.log('Failed URL:', url, err);
+                }
+            }
+
+            if (!success) {
+                playerStatus.textContent = '❌ Stream non disponibile';
+                playerEq.classList.remove('active');
+                miniEq.classList.remove('active');
+            }
+
+            document.querySelectorAll('.station-item').forEach(el => {
+                el.classList.toggle('playing', el.dataset.uuid === station.stationuuid && success);
+            });
+        }
+
+        // Recents
+        function addToRecents(station) {
+            recents = recents.filter(r => r.stationuuid !== station.stationuuid);
+            recents.unshift(station);
+            if (recents.length > 5) recents = recents.slice(0, 5);
+            localStorage.setItem('radioRecents', JSON.stringify(recents));
+        }
+
+        // Stop station
+        function stopStation() {
+            audio.pause();
+            audio.src = '';
+            isPlaying = false;
+            currentStation = null;
+            player.classList.remove('active');
+            playerEq.classList.remove('active');
+            miniEq.classList.remove('active');
+            document.querySelectorAll('.station-item').forEach(el => el.classList.remove('playing'));
+        }
+
+        // Toggle play/pause
+        playPauseBtn.onclick = () => {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
+                playerStatus.textContent = '⏸ In pausa';
+                playerEq.classList.remove('active');
+                miniEq.classList.remove('active');
+            } else if (currentStation) {
+                audio.play();
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸';
+                playerStatus.textContent = '▶ In riproduzione';
+                playerEq.classList.add('active');
+                miniEq.classList.add('active');
+            }
+        };
+
+        // Stop
+        stopBtn.onclick = stopStation;
+
+        // Back button
+        document.getElementById('backBtn').onclick = () => {
+            document.getElementById('stationsView').classList.remove('active');
+            document.getElementById('countriesView').style.display = 'block';
+        };
+
+        // Favorites
+        function toggleFavorite(uuid, evt) {
+            if (evt) evt.stopPropagation();
+            const index = favorites.findIndex(f => f.stationuuid === uuid);
+            if (index >= 0) {
+                favorites.splice(index, 1);
+            } else if (stationCache[uuid]) {
+                favorites.push(stationCache[uuid]);
+            }
+            localStorage.setItem('radioFavorites', JSON.stringify(favorites));
+
+            if (document.getElementById('favoritesView').classList.contains('active')) {
+                renderFavorites();
+            }
+            document.querySelectorAll(`.fav-btn[data-uuid="${uuid}"]`).forEach(btn => {
+                btn.textContent = index >= 0 ? '☆' : '⭐';
+                btn.classList.add('bounce');
+                setTimeout(() => btn.classList.remove('bounce'), 400);
+            });
+        }
+
+        function renderFavorites() {
+            const list = document.getElementById('favoritesList');
+            if (favorites.length === 0) {
+                list.innerHTML = '<div class="no-favorites">Nessun preferito ancora.<br>Tocca ☆ per aggiungere stazioni!</div>';
+            } else {
+                renderStationsToElement(favorites, list);
+            }
+
+            // Recents section
+            const recentsSection = document.getElementById('recentsSection');
+            if (recents.length > 0) {
+                recentsSection.innerHTML = '<div class="recents-header">🕐 Ascoltate di recente</div><div id="recentsList"></div>';
+                renderStationsToElement(recents, document.getElementById('recentsList'));
+            } else {
+                recentsSection.innerHTML = '';
+            }
+        }
+
+        // Trending
+        async function loadTrending() {
+            if (trendingLoaded) return;
+            const list = document.getElementById('trendingList');
+            try {
+                const resp = await fetch(`${API_BASE}/stations/topclick/20`);
+                const stations = await resp.json();
+                trendingLoaded = true;
+                renderStationsToElement(stations, list);
+            } catch (e) {
+                list.innerHTML = '<div class="loading">Errore nel caricamento trending</div>';
+            }
+        }
+
         // Tabs
         document.querySelectorAll('.tab').forEach(tab => {
             tab.onclick = () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
-                const tabName = tab.dataset.tab;
-                document.getElementById('countriesView').style.display = tabName === 'countries' ? 'block' : 'none';
+
+                currentTab = tab.dataset.tab;
+                document.getElementById('countriesView').style.display = currentTab === 'countries' ? 'block' : 'none';
                 document.getElementById('stationsView').classList.remove('active');
-                document.getElementById('favoritesView').classList.toggle('active', tabName === 'favorites');
-                
-                if (tabName === 'favorites') {
-                    renderFavorites();
-                }
+                document.getElementById('favoritesView').classList.toggle('active', currentTab === 'favorites');
+                document.getElementById('trendingView').classList.toggle('active', currentTab === 'trending');
+
+                if (currentTab === 'favorites') renderFavorites();
+                if (currentTab === 'trending') loadTrending();
             };
         });
-        
+
         // Search
-        let allStations = []; // Store loaded stations for filtering
-        let searchTimeout = null;
-        
         document.getElementById('searchBox').oninput = (e) => {
             const query = e.target.value.toLowerCase().trim();
-            
             clearTimeout(searchTimeout);
-            
+
             if (document.getElementById('stationsView').classList.contains('active')) {
-                // Filter current stations
-                const filtered = allStations.filter(s => 
+                const filtered = allStations.filter(s =>
                     s.name.toLowerCase().includes(query) ||
                     (s.tags && s.tags.toLowerCase().includes(query))
                 );
                 renderStations(filtered);
             } else if (document.getElementById('favoritesView').classList.contains('active')) {
-                // Filter favorites
-                const filtered = favorites.filter(s => 
-                    s.name.toLowerCase().includes(query)
-                );
+                const filtered = favorites.filter(s => s.name.toLowerCase().includes(query));
                 renderStationsToElement(filtered, document.getElementById('favoritesList'));
+            } else if (document.getElementById('trendingView').classList.contains('active')) {
+                // ignore search in trending
             } else {
-                // Filter countries or search stations globally
                 if (query.length >= 3) {
                     searchTimeout = setTimeout(() => searchStationsGlobal(query), 500);
                 } else {
@@ -663,7 +916,7 @@
                 }
             }
         };
-        
+
         async function searchStationsGlobal(query) {
             document.getElementById('countriesGrid').innerHTML = '<div class="loading loading-pulse">Cercando stazioni...</div>';
             try {
@@ -682,7 +935,7 @@
                 renderCountries(query);
             }
         }
-        
+
         // Audio events
         audio.onwaiting = () => playerStatus.textContent = '⏳ Buffering...';
         audio.onplaying = () => {
@@ -690,8 +943,8 @@
             updateMediaSession();
         };
         audio.onerror = () => playerStatus.textContent = '❌ Errore stream';
-        
-        // Media Session API for background playback & lock screen controls
+
+        // Media Session API
         function updateMediaSession() {
             if ('mediaSession' in navigator && currentStation) {
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -704,44 +957,34 @@
                         { src: currentStation.favicon, sizes: '256x256', type: 'image/png' }
                     ] : []
                 });
-                
+
                 navigator.mediaSession.setActionHandler('play', () => {
-                    audio.play();
-                    isPlaying = true;
-                    playPauseBtn.textContent = '⏸';
+                    audio.play(); isPlaying = true; playPauseBtn.textContent = '⏸';
+                    playerEq.classList.add('active'); miniEq.classList.add('active');
                 });
-                
                 navigator.mediaSession.setActionHandler('pause', () => {
-                    audio.pause();
-                    isPlaying = false;
-                    playPauseBtn.textContent = '▶';
+                    audio.pause(); isPlaying = false; playPauseBtn.textContent = '▶';
+                    playerEq.classList.remove('active'); miniEq.classList.remove('active');
                 });
-                
-                navigator.mediaSession.setActionHandler('stop', () => {
-                    stopBtn.click();
-                });
+                navigator.mediaSession.setActionHandler('stop', () => { stopStation(); });
             }
         }
-        
+
         // Prevent audio suspension on mobile
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && currentStation && isPlaying) {
-                // Resume if needed when coming back
-                if (audio.paused) {
-                    audio.play().catch(() => {});
-                }
+                if (audio.paused) audio.play().catch(() => {});
             }
         });
-        
-        // Keep audio session alive
+
         audio.setAttribute('playsinline', '');
         audio.setAttribute('webkit-playsinline', '');
-        
+
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
-        
+
         // Init
         renderCountries();
     </script>
