@@ -977,7 +977,9 @@
                 const response = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=100&order=clickcount&reverse=true&lastcheckok=1`);
                 let stations = await response.json();
 
-                stations = stations.slice(0, 80);
+                stations = stations.filter(s =>
+                    (s.url_resolved?.startsWith('https') || s.url?.startsWith('https'))
+                ).slice(0, 50);
 
                 if (stations.length === 0) {
                     const resp2 = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=50&order=clickcount&reverse=true&lastcheckok=1`);
