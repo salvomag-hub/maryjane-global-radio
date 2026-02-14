@@ -352,7 +352,7 @@
             gap: 14px;
         }
 
-        .player-info { flex: 1; overflow: hidden; min-width: 0; }
+        .player-info { flex: 1; overflow: hidden; min-width: 0; cursor: pointer; }
         .player-station {
             font-weight: 700;
             font-size: 0.9em;
@@ -474,6 +474,265 @@
         }
         .loading-pulse { animation: pulse 1.5s infinite; }
 
+        /* ===== FULLSCREEN PLAYER ===== */
+        .fullscreen-player {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(13,12,30,0.92);
+            backdrop-filter: blur(30px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            opacity: 0;
+        }
+        .fullscreen-player.active {
+            transform: translateY(0);
+            pointer-events: all;
+            opacity: 1;
+        }
+
+        .fs-swipe-bar {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 5px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+
+        .fs-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            font-size: 1.6em;
+            cursor: pointer;
+            padding: 8px;
+            transition: color 0.2s;
+        }
+        .fs-close:hover { color: #fff; }
+
+        .fs-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 28px;
+            background: rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(6,214,160,0.2), 0 8px 32px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+        }
+        .fs-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 28px;
+        }
+
+        .fs-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 4px;
+        }
+
+        .fs-tags {
+            font-size: 0.85em;
+            opacity: 0.6;
+            margin-bottom: 8px;
+        }
+
+        .fs-now-playing {
+            font-size: 0.8em;
+            color: var(--teal);
+            margin-bottom: 24px;
+            text-align: center;
+            padding: 0 20px;
+            min-height: 1.2em;
+        }
+
+        .fs-eq {
+            display: flex;
+            align-items: flex-end;
+            gap: 5px;
+            height: 40px;
+            margin-bottom: 28px;
+        }
+        .fs-eq span {
+            width: 6px;
+            background: var(--teal);
+            border-radius: 3px;
+            transition: height 0.1s;
+        }
+        .fs-eq.active span:nth-child(1) { animation: fseq1 0.6s ease-in-out infinite alternate; }
+        .fs-eq.active span:nth-child(2) { animation: fseq2 0.5s ease-in-out infinite alternate; }
+        .fs-eq.active span:nth-child(3) { animation: fseq3 0.7s ease-in-out infinite alternate; }
+        .fs-eq.active span:nth-child(4) { animation: fseq4 0.55s ease-in-out infinite alternate; }
+        .fs-eq.active span:nth-child(5) { animation: fseq5 0.65s ease-in-out infinite alternate; }
+        .fs-eq:not(.active) span { height: 6px !important; }
+
+        @keyframes fseq1 { 0% { height: 6px; } 100% { height: 34px; } }
+        @keyframes fseq2 { 0% { height: 10px; } 100% { height: 28px; } }
+        @keyframes fseq3 { 0% { height: 8px; } 100% { height: 38px; } }
+        @keyframes fseq4 { 0% { height: 12px; } 100% { height: 24px; } }
+        @keyframes fseq5 { 0% { height: 6px; } 100% { height: 30px; } }
+
+        .fs-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .fs-btn {
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .fs-btn.play {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--teal), var(--violet));
+            color: #fff;
+            font-size: 1.6em;
+            font-weight: bold;
+            box-shadow: 0 4px 30px rgba(6,214,160,0.4);
+        }
+        .fs-btn.play:hover { transform: scale(1.08); }
+        .fs-btn.stop {
+            width: 46px;
+            height: 46px;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6);
+            font-size: 1.1em;
+        }
+        .fs-btn.stop:hover { background: rgba(255,255,255,0.18); }
+
+        .fs-volume {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 240px;
+            margin-bottom: 32px;
+        }
+        .fs-volume .volume-icon { font-size: 1em; opacity: 0.5; }
+        .fs-volume input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.15);
+            outline: none;
+        }
+        .fs-volume input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--teal);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(6,214,160,0.5);
+        }
+        .fs-volume input[type="range"]::-moz-range-thumb {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: var(--teal);
+            cursor: pointer;
+            border: none;
+        }
+
+        .fs-info {
+            position: absolute;
+            bottom: 30px;
+            text-align: center;
+            font-size: 0.72em;
+            opacity: 0.4;
+            padding: 0 20px;
+        }
+        .fs-info a {
+            color: var(--teal);
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        .fs-info a:hover { opacity: 1; text-decoration: underline; }
+
+        /* ===== FULLSCREEN EXTRAS ===== */
+        .fs-action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .fs-action-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(16px);
+            color: #fff;
+            font-size: 1.4em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .fs-action-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.08); }
+        .fs-action-btn:active { transform: scale(1.2); }
+
+        .fs-listen-timer {
+            font-size: 1.2em;
+            color: var(--teal);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .fs-all-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 12px;
+            padding: 0 20px;
+        }
+        .fs-tag-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: rgba(6,214,160,0.15);
+            color: var(--teal);
+            font-size: 0.75em;
+        }
+
+        .fs-extra-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            font-size: 0.75em;
+            opacity: 0.5;
+            margin-bottom: 8px;
+            padding: 0 20px;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 500px) {
             .header { padding: 10px 14px; gap: 8px; }
@@ -553,6 +812,35 @@
         </div>
     </div>
 
+    <!-- Fullscreen Player -->
+    <div class="fullscreen-player" id="fullscreenPlayer">
+        <div class="fs-swipe-bar" id="fsSwipeBar"></div>
+        <button class="fs-close" id="fsClose">✕</button>
+        <div class="fs-logo" id="fsLogo">📻</div>
+        <div class="fs-name" id="fsName">—</div>
+        <div class="fs-tags" id="fsTags"></div>
+        <div class="fs-now-playing" id="fsNowPlaying">Now Playing — —</div>
+        <div class="fs-listen-timer" id="fsListenTimer">⏱ 00:00</div>
+        <div class="fs-all-tags" id="fsAllTags"></div>
+        <div class="fs-extra-info" id="fsExtraInfo"></div>
+        <div class="fs-eq" id="fsEq">
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="fs-controls">
+            <button class="fs-btn stop" id="fsStopBtn">⏹</button>
+            <button class="fs-btn play" id="fsPlayPauseBtn">▶</button>
+        </div>
+        <div class="fs-action-buttons">
+            <button class="fs-action-btn" id="fsFavBtn" title="Preferiti">☆</button>
+            <button class="fs-action-btn" id="fsShareBtn" title="Condividi">📤</button>
+        </div>
+        <div class="fs-volume">
+            <span class="volume-icon">🔊</span>
+            <input type="range" id="fsVolumeSlider" min="0" max="1" step="0.05" value="0.8">
+        </div>
+        <div class="fs-info" id="fsInfo"></div>
+    </div>
+
     <audio id="audioPlayer"></audio>
 
     <script>
@@ -562,51 +850,51 @@
             { code: 'IT', name: 'Italia', flag: '🇮🇹' },
             { code: 'US', name: 'USA', flag: '🇺🇸' },
             { code: 'GB', name: 'UK', flag: '🇬🇧' },
-            { code: 'FR', name: 'Francia', flag: '🇫🇷' },
-            { code: 'DE', name: 'Germania', flag: '🇩🇪' },
-            { code: 'ES', name: 'Spagna', flag: '🇪🇸' },
-            { code: 'BR', name: 'Brasile', flag: '🇧🇷' },
-            { code: 'JP', name: 'Giappone', flag: '🇯🇵' },
-            { code: 'MX', name: 'Messico', flag: '🇲🇽' },
+            { code: 'FR', name: 'France', flag: '🇫🇷' },
+            { code: 'DE', name: 'Deutschland', flag: '🇩🇪' },
+            { code: 'ES', name: 'España', flag: '🇪🇸' },
+            { code: 'BR', name: 'Brasil', flag: '🇧🇷' },
+            { code: 'JP', name: '日本', flag: '🇯🇵' },
+            { code: 'MX', name: 'México', flag: '🇲🇽' },
             { code: 'AR', name: 'Argentina', flag: '🇦🇷' },
             { code: 'AU', name: 'Australia', flag: '🇦🇺' },
             { code: 'CA', name: 'Canada', flag: '🇨🇦' },
-            { code: 'NL', name: 'Olanda', flag: '🇳🇱' },
-            { code: 'BE', name: 'Belgio', flag: '🇧🇪' },
-            { code: 'CH', name: 'Svizzera', flag: '🇨🇭' },
-            { code: 'AT', name: 'Austria', flag: '🇦🇹' },
-            { code: 'PT', name: 'Portogallo', flag: '🇵🇹' },
-            { code: 'PL', name: 'Polonia', flag: '🇵🇱' },
-            { code: 'RU', name: 'Russia', flag: '🇷🇺' },
-            { code: 'IN', name: 'India', flag: '🇮🇳' },
-            { code: 'CN', name: 'Cina', flag: '🇨🇳' },
-            { code: 'KR', name: 'Corea Sud', flag: '🇰🇷' },
-            { code: 'SE', name: 'Svezia', flag: '🇸🇪' },
-            { code: 'NO', name: 'Norvegia', flag: '🇳🇴' },
-            { code: 'DK', name: 'Danimarca', flag: '🇩🇰' },
-            { code: 'FI', name: 'Finlandia', flag: '🇫🇮' },
-            { code: 'GR', name: 'Grecia', flag: '🇬🇷' },
-            { code: 'TR', name: 'Turchia', flag: '🇹🇷' },
-            { code: 'IE', name: 'Irlanda', flag: '🇮🇪' },
-            { code: 'CZ', name: 'Cechia', flag: '🇨🇿' },
-            { code: 'RO', name: 'Romania', flag: '🇷🇴' },
-            { code: 'HU', name: 'Ungheria', flag: '🇭🇺' },
-            { code: 'CL', name: 'Cile', flag: '🇨🇱' },
+            { code: 'NL', name: 'Nederland', flag: '🇳🇱' },
+            { code: 'BE', name: 'België', flag: '🇧🇪' },
+            { code: 'CH', name: 'Schweiz', flag: '🇨🇭' },
+            { code: 'AT', name: 'Österreich', flag: '🇦🇹' },
+            { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
+            { code: 'PL', name: 'Polska', flag: '🇵🇱' },
+            { code: 'RU', name: 'Россия', flag: '🇷🇺' },
+            { code: 'IN', name: 'भारत', flag: '🇮🇳' },
+            { code: 'CN', name: '中国', flag: '🇨🇳' },
+            { code: 'KR', name: '한국', flag: '🇰🇷' },
+            { code: 'SE', name: 'Sverige', flag: '🇸🇪' },
+            { code: 'NO', name: 'Norge', flag: '🇳🇴' },
+            { code: 'DK', name: 'Danmark', flag: '🇩🇰' },
+            { code: 'FI', name: 'Suomi', flag: '🇫🇮' },
+            { code: 'GR', name: 'Ελλάδα', flag: '🇬🇷' },
+            { code: 'TR', name: 'Türkiye', flag: '🇹🇷' },
+            { code: 'IE', name: 'Ireland', flag: '🇮🇪' },
+            { code: 'CZ', name: 'Česko', flag: '🇨🇿' },
+            { code: 'RO', name: 'România', flag: '🇷🇴' },
+            { code: 'HU', name: 'Magyarország', flag: '🇭🇺' },
+            { code: 'CL', name: 'Chile', flag: '🇨🇱' },
             { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
-            { code: 'ZA', name: 'Sudafrica', flag: '🇿🇦' },
-            { code: 'EG', name: 'Egitto', flag: '🇪🇬' },
-            { code: 'MA', name: 'Marocco', flag: '🇲🇦' },
+            { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
+            { code: 'EG', name: 'مصر', flag: '🇪🇬' },
+            { code: 'MA', name: 'المغرب', flag: '🇲🇦' },
             { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
-            { code: 'IL', name: 'Israele', flag: '🇮🇱' },
-            { code: 'AE', name: 'Emirati', flag: '🇦🇪' },
-            { code: 'TH', name: 'Tailandia', flag: '🇹🇭' },
-            { code: 'PH', name: 'Filippine', flag: '🇵🇭' },
+            { code: 'IL', name: 'ישראל', flag: '🇮🇱' },
+            { code: 'AE', name: 'الإمارات', flag: '🇦🇪' },
+            { code: 'TH', name: 'ไทย', flag: '🇹🇭' },
+            { code: 'PH', name: 'Pilipinas', flag: '🇵🇭' },
             { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
             { code: 'MY', name: 'Malaysia', flag: '🇲🇾' },
-            { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
-            { code: 'NZ', name: 'N. Zelanda', flag: '🇳🇿' },
-            { code: 'UA', name: 'Ucraina', flag: '🇺🇦' },
-            { code: 'HR', name: 'Croazia', flag: '🇭🇷' },
+            { code: 'VN', name: 'Việt Nam', flag: '🇻🇳' },
+            { code: 'NZ', name: 'New Zealand', flag: '🇳🇿' },
+            { code: 'UA', name: 'Україна', flag: '🇺🇦' },
+            { code: 'HR', name: 'Hrvatska', flag: '🇭🇷' },
         ];
 
         const PINNED = ['IT', 'ES', 'AR', 'GB'];
@@ -984,6 +1272,236 @@
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
+
+        // ===== FULLSCREEN PLAYER =====
+        const fullscreenPlayer = document.getElementById('fullscreenPlayer');
+        const fsClose = document.getElementById('fsClose');
+        const fsSwipeBar = document.getElementById('fsSwipeBar');
+        const fsLogo = document.getElementById('fsLogo');
+        const fsName = document.getElementById('fsName');
+        const fsTags = document.getElementById('fsTags');
+        const fsNowPlaying = document.getElementById('fsNowPlaying');
+        const fsEq = document.getElementById('fsEq');
+        const fsPlayPauseBtn = document.getElementById('fsPlayPauseBtn');
+        const fsStopBtn = document.getElementById('fsStopBtn');
+        const fsVolumeSlider = document.getElementById('fsVolumeSlider');
+        const fsInfo = document.getElementById('fsInfo');
+
+        fsVolumeSlider.value = audio.volume;
+
+        // Open fullscreen on mini-player click
+        document.querySelector('.player-content').addEventListener('click', (e) => {
+            // Don't open if clicking controls or volume
+            if (e.target.closest('.player-controls') || e.target.closest('.volume-wrap')) return;
+            if (!currentStation) return;
+            openFullscreen();
+        });
+
+        function openFullscreen() {
+            updateFullscreenUI();
+            fullscreenPlayer.classList.add('active');
+        }
+
+        function closeFullscreen() {
+            fullscreenPlayer.classList.remove('active');
+        }
+
+        function updateFullscreenUI() {
+            if (!currentStation) return;
+            fsName.textContent = currentStation.name;
+            fsTags.textContent = currentStation.tags?.split(',').slice(0, 3).join(', ') || '';
+            fsLogo.innerHTML = currentStation.favicon
+                ? `<img src="${currentStation.favicon}" onerror="this.parentElement.innerHTML='📻'">`
+                : '📻';
+            fsPlayPauseBtn.textContent = isPlaying ? '⏸' : '▶';
+            fsEq.classList.toggle('active', isPlaying);
+            fsVolumeSlider.value = audio.volume;
+
+            // Station info
+            const parts = [];
+            if (currentStation.bitrate) parts.push(currentStation.bitrate + ' kbps');
+            if (currentStation.codec) parts.push(currentStation.codec);
+            if (currentStation.country) parts.push(currentStation.country);
+            let infoHtml = parts.join(' · ');
+            if (currentStation.homepage) {
+                infoHtml += ` · <a href="${currentStation.homepage}" target="_blank" rel="noopener">Sito web ↗</a>`;
+            }
+            fsInfo.innerHTML = infoHtml;
+        }
+
+        fsClose.onclick = closeFullscreen;
+        fsSwipeBar.onclick = closeFullscreen;
+
+        // Swipe down to close
+        let fsTouchStartY = 0;
+        fullscreenPlayer.addEventListener('touchstart', (e) => {
+            fsTouchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        fullscreenPlayer.addEventListener('touchend', (e) => {
+            const dy = e.changedTouches[0].clientY - fsTouchStartY;
+            if (dy > 80) closeFullscreen();
+        }, { passive: true });
+
+        // Fullscreen controls
+        fsPlayPauseBtn.onclick = () => {
+            playPauseBtn.click();
+            setTimeout(updateFullscreenUI, 50);
+        };
+        fsStopBtn.onclick = () => {
+            stopStation();
+            closeFullscreen();
+        };
+
+        fsVolumeSlider.oninput = () => {
+            audio.volume = parseFloat(fsVolumeSlider.value);
+            volumeSlider.value = fsVolumeSlider.value;
+            localStorage.setItem('radioVolume', fsVolumeSlider.value);
+        };
+
+        // Sync fullscreen UI when play state changes
+        const origPlayPause = playPauseBtn.onclick;
+        const _origPPClick = playPauseBtn.onclick;
+        playPauseBtn.onclick = () => {
+            _origPPClick();
+            if (fullscreenPlayer.classList.contains('active')) updateFullscreenUI();
+        };
+
+        // Now playing metadata tracking
+        let nowPlayingTitle = '';
+        function updateNowPlaying() {
+            if ('mediaSession' in navigator && navigator.mediaSession.metadata) {
+                const t = navigator.mediaSession.metadata.title;
+                if (t && t !== currentStation?.name) {
+                    nowPlayingTitle = t;
+                }
+            }
+            fsNowPlaying.textContent = nowPlayingTitle
+                ? `Now Playing — ${nowPlayingTitle}`
+                : 'Now Playing — —';
+        }
+        setInterval(updateNowPlaying, 3000);
+
+        // Keep fullscreen EQ in sync
+        const origOnPlaying = audio.onplaying;
+        audio.onplaying = () => {
+            playerStatus.textContent = '▶ In riproduzione';
+            updateMediaSession();
+            if (fullscreenPlayer.classList.contains('active')) updateFullscreenUI();
+        };
+
+        // ===== FULLSCREEN EXTRAS =====
+        const fsFavBtn = document.getElementById('fsFavBtn');
+        const fsShareBtn = document.getElementById('fsShareBtn');
+        const fsListenTimer = document.getElementById('fsListenTimer');
+        const fsAllTags = document.getElementById('fsAllTags');
+        const fsExtraInfo = document.getElementById('fsExtraInfo');
+
+        let listenTimer = null;
+        let listenStartTime = null;
+
+        function startListenTimer() {
+            stopListenTimer();
+            listenStartTime = Date.now();
+            listenTimer = setInterval(updateListenTimer, 1000);
+        }
+
+        function stopListenTimer() {
+            if (listenTimer) clearInterval(listenTimer);
+            listenTimer = null;
+            listenStartTime = null;
+            fsListenTimer.textContent = '⏱ 00:00';
+        }
+
+        function updateListenTimer() {
+            if (!listenStartTime) return;
+            const elapsed = Math.floor((Date.now() - listenStartTime) / 1000);
+            const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const ss = String(elapsed % 60).padStart(2, '0');
+            fsListenTimer.textContent = `⏱ ${mm}:${ss}`;
+        }
+
+        // Hook timer into play/stop
+        const _origPlayStation = playStation;
+        playStation = async function(station) {
+            await _origPlayStation(station);
+            if (isPlaying) startListenTimer();
+        };
+
+        const _origStopStation = stopStation;
+        stopStation = function() {
+            stopListenTimer();
+            _origStopStation();
+        };
+
+        // Also hook play/pause for timer
+        const _origPPClick2 = playPauseBtn.onclick;
+        playPauseBtn.onclick = () => {
+            const wasPlaying = isPlaying;
+            _origPPClick2();
+            if (wasPlaying && !isPlaying) {
+                // paused — stop timer
+                if (listenTimer) clearInterval(listenTimer);
+                listenTimer = null;
+            } else if (!wasPlaying && isPlaying) {
+                // resumed — restart timer from where it was or start fresh
+                if (listenStartTime) {
+                    listenTimer = setInterval(updateListenTimer, 1000);
+                } else {
+                    startListenTimer();
+                }
+            }
+            if (fullscreenPlayer.classList.contains('active')) updateFullscreenUI();
+        };
+
+        // Fav button in fullscreen
+        fsFavBtn.onclick = () => {
+            if (!currentStation) return;
+            toggleFavorite(currentStation.stationuuid);
+            updateFullscreenFavBtn();
+        };
+
+        function updateFullscreenFavBtn() {
+            if (!currentStation) return;
+            const isFav = favorites.some(f => f.stationuuid === currentStation.stationuuid);
+            fsFavBtn.textContent = isFav ? '⭐' : '☆';
+        }
+
+        // Share button
+        fsShareBtn.onclick = async () => {
+            if (!currentStation) return;
+            const shareUrl = currentStation.homepage || currentStation.url_resolved || currentStation.url;
+            const shareData = { title: currentStation.name, url: shareUrl };
+            if (navigator.share) {
+                try { await navigator.share(shareData); } catch(e) {}
+            } else {
+                try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    fsShareBtn.textContent = '✅';
+                    setTimeout(() => { fsShareBtn.textContent = '📤'; }, 1500);
+                } catch(e) {}
+            }
+        };
+
+        // Extend updateFullscreenUI for new elements
+        const _origUpdateFS = updateFullscreenUI;
+        updateFullscreenUI = function() {
+            _origUpdateFS();
+            if (!currentStation) return;
+
+            // Fav button
+            updateFullscreenFavBtn();
+
+            // All tags
+            const tags = (currentStation.tags || '').split(',').map(t => t.trim()).filter(Boolean);
+            fsAllTags.innerHTML = tags.map(t => `<span class="fs-tag-pill">${t}</span>`).join('');
+
+            // Extra info
+            const extras = [];
+            if (currentStation.votes) extras.push(`👍 ${currentStation.votes}`);
+            if (currentStation.clickcount) extras.push(`📈 ${currentStation.clickcount}`);
+            if (currentStation.language) extras.push(`🗣️ ${currentStation.language}`);
+            fsExtraInfo.innerHTML = extras.map(e => `<span>${e}</span>`).join('');
+        };
 
         // Init
         renderCountries();
