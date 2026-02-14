@@ -981,6 +981,16 @@
                     (s.url_resolved?.startsWith('https') || s.url?.startsWith('https'))
                 ).slice(0, 50);
 
+                // Add custom HTTPS stations not in radio-browser
+                const CUSTOM_STATIONS = {
+                    'IT': [
+                        { name: 'Radio 24 - Il Sole 24 Ore', url_resolved: 'https://ilsole24ore-radio.akamaized.net/hls/live/2035301/radio24/playlist.m3u8', url: 'https://ilsole24ore-radio.akamaized.net/hls/live/2035301/radio24/playlist.m3u8', favicon: 'https://www.radio24.ilsole24ore.com/assets/img/logo.webp', tags: 'news,talk,economia', country: 'Italy', countrycode: 'IT', language: 'italian', bitrate: 128, codec: 'HLS', homepage: 'https://www.radio24.ilsole24ore.com', stationuuid: 'radio24-custom', votes: 999, clickcount: 999 }
+                    ]
+                };
+                if (CUSTOM_STATIONS[code]) {
+                    stations = [...CUSTOM_STATIONS[code], ...stations];
+                }
+
                 if (stations.length === 0) {
                     const resp2 = await fetch(`${API_BASE}/stations/bycountrycodeexact/${code}?limit=50&order=clickcount&reverse=true&lastcheckok=1`);
                     stations = await resp2.json();
