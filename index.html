@@ -411,7 +411,9 @@
         const playPauseBtn = document.getElementById('playPauseBtn');
         const stopBtn = document.getElementById('stopBtn');
         
-        // Render countries
+        // Render countries — pinned first, then alphabetical
+        const PINNED = ['IT', 'ES'];
+        
         function renderCountries(filter = '') {
             const grid = document.getElementById('countriesGrid');
             const filtered = COUNTRIES.filter(c => 
@@ -419,8 +421,14 @@
                 c.code.toLowerCase().includes(filter.toLowerCase())
             );
             
-            grid.innerHTML = filtered.map(country => `
-                <div class="country-card" onclick="loadCountry('${country.code}', '${country.name}', '${country.flag}')">
+            const pinned = filtered.filter(c => PINNED.includes(c.code))
+                .sort((a, b) => PINNED.indexOf(a.code) - PINNED.indexOf(b.code));
+            const rest = filtered.filter(c => !PINNED.includes(c.code))
+                .sort((a, b) => a.name.localeCompare(b.name));
+            const sorted = [...pinned, ...rest];
+            
+            grid.innerHTML = sorted.map(country => `
+                <div class="country-card" onclick="loadCountry('${country.code}', '${country.name}', '${country.flag}')" ${PINNED.includes(country.code) ? 'style="border: 2px solid #4CAF50; background: #f0fff0;"' : ''}>
                     <div class="country-flag">${country.flag}</div>
                     <div class="country-name">${country.name}</div>
                 </div>
